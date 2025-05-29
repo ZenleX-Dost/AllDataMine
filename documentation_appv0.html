@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>appv0.ipynb - Interactive Documentation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom scrollbar for webkit browsers */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1; /* slate-300 */
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8; /* slate-400 */
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .accordion-content.open {
+            max-height: 2000px; /* Adjust as needed for content */
+        }
+        .code-block {
+            background-color: #f3f4f6; /* gray-100 */
+            border: 1px solid #e5e7eb; /* gray-200 */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.875rem;
+            line-height: 1.25rem;
+            color: #1f2937; /* gray-800 */
+        }
+        .sidebar-link.active {
+            background-color: #e0f2fe; /* sky-100 */
+            color: #0369a1; /* sky-700 */
+            font-weight: 600;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-stone-100 text-stone-800">
+    <div class="flex flex-col md:flex-row min-h-screen">
+        <aside class="w-full md:w-72 bg-stone-50 text-stone-700 p-6 shadow-lg md:min-h-screen print:hidden">
+            <h1 class="text-2xl font-bold text-sky-700 mb-6 border-b-2 border-sky-200 pb-2">appv0.ipynb Docs</h1>
+            <nav>
+                <ul class="space-y-2">
+                    <li><a href="#" class="sidebar-link block py-2 px-3 rounded-lg hover:bg-sky-50 transition-colors duration-200" data-target="intro">1. Introduction</a></li>
+                    <li><a href="#" class="sidebar-link block py-2 px-3 rounded-lg hover:bg-sky-50 transition-colors duration-200" data-target="cell-by-cell">2. Cell-by-Cell Explanation</a></li>
+                    <li><a href="#" class="sidebar-link block py-2 px-3 rounded-lg hover:bg-sky-50 transition-colors duration-200" data-target="workflow">3. Overall Workflow</a></li>
+                    <li><a href="#" class="sidebar-link block py-2 px-3 rounded-lg hover:bg-sky-50 transition-colors duration-200" data-target="observations">4. Key Observations</a></li>
+                    <li><a href="#" class="sidebar-link block py-2 px-3 rounded-lg hover:bg-sky-50 transition-colors duration-200" data-target="errors">5. Common Errors & Solutions</a></li>
+                </ul>
+            </nav>
+            <div class="mt-8 pt-4 border-t border-stone-300 text-xs text-stone-500">
+                <p>GIIADS - StackUnderFlow</p>
+                <p class="mt-2">This is an interactive view of the notebook documentation.</p>
+            </div>
+        </aside>
+
+        <main class="flex-1 p-6 md:p-10 overflow-y-auto">
+            <section id="intro" class="content-section active bg-white p-6 rounded-xl shadow-md">
+                <h2 class="text-3xl font-semibold text-sky-600 mb-6">1. Introduction</h2>
+                <div class="prose max-w-none text-stone-700">
+                    <p>This Jupyter Notebook (<code>appv0.ipynb</code>) outlines the initial exploratory steps and model development for predicting the Remaining Useful Life (RUL) of NASA turbofan engines. It serves as a foundational script for the data mining project, covering data loading, preprocessing, exploratory data analysis (EDA), feature engineering, and model training for the C-MAPSS dataset.</p>
+                    <p>The notebook aims to process all four subsets of the C-MAPSS dataset (FD001, FD002, FD003, FD004) and build a Random Forest Regressor model for RUL prediction.</p>
+                    <p class="mt-4 text-sm text-stone-600">Use the sidebar to navigate through different sections of this documentation. The "Cell-by-Cell Explanation" provides an interactive accordion to explore each code cell's purpose and details.</p>
+                </div>
+            </section>
+
+            <section id="cell-by-cell" class="content-section bg-white p-6 rounded-xl shadow-md">
+                <h2 class="text-3xl font-semibold text-sky-600 mb-6">2. Notebook Structure and Cell-by-Cell Explanation</h2>
+                <p class="mb-6 text-stone-600">The notebook is organized into several key sections, each performing a distinct part of the data mining pipeline. Click on each cell's title to expand or collapse its details.</p>
+                <div id="accordionContainer" class="space-y-3">
+                    </div>
+            </section>
+
+            <section id="workflow" class="content-section bg-white p-6 rounded-xl shadow-md">
+                <h2 class="text-3xl font-semibold text-sky-600 mb-6">3. Overall Workflow Summary</h2>
+                <div class="prose max-w-none text-stone-700">
+                    <ol class="list-decimal list-inside space-y-2">
+                        <li><strong>Setup</strong>: Install and import necessary libraries.</li>
+                        <li><strong>Data Ingestion</strong>: Load all four C-MAPSS datasets (FD001-FD004), including training data, test data, and true RULs for the test sets.</li>
+                        <li><strong>Preprocessing</strong>:
+                            <ul class="list-disc list-inside ml-4">
+                                <li>Calculate RUL for training data.</li>
+                                <li>Normalize sensor and setting values using MinMaxScaler.</li>
+                                <li>Identify operating conditions (clustering for FD002/FD004, single label for FD001/FD003).</li>
+                            </ul>
+                        </li>
+                        <li><strong>Exploratory Data Analysis</strong>:
+                            <ul class="list-disc list-inside ml-4">
+                                <li>Visualize sensor trends for an example engine from each dataset.</li>
+                                <li>Analyze sensor correlations with RUL.</li>
+                                <li>Visualize operating condition distributions for relevant datasets.</li>
+                            </ul>
+                        </li>
+                        <li><strong>Feature Engineering</strong>:
+                            <ul class="list-disc list-inside ml-4">
+                                <li>Create rolling mean and standard deviation features for all sensors.</li>
+                                <li>Create lagged features (lag 1 and lag 2) for all sensors.</li>
+                            </ul>
+                        </li>
+                        <li><strong>Model Training and Evaluation (per dataset)</strong>:
+                            <ul class="list-disc list-inside ml-4">
+                                <li>Define a custom asymmetric scoring function.</li>
+                                <li>Select features: Use pre-defined top features for FD001, or all engineered features for others on the first run.</li>
+                                <li>Perform 3-fold cross-validation with a Random Forest Regressor, splitting by engine unit.</li>
+                                <li>Train a final Random Forest Regressor on the full training data.</li>
+                                <li>Evaluate the final model on the test set.</li>
+                                <li>Calculate and display feature importances. If <code>top_features</code> for the dataset was empty, update it with the top 10 features found (this affects subsequent runs of the notebook for those datasets).</li>
+                                <li>Plot predicted vs. true RUL.</li>
+                            </ul>
+                        </li>
+                        <li><strong>Concluding Remarks</strong>: Print overall project insights and suggest future work. Potentially re-processes DataFrames based on newly identified top features.</li>
+                    </ol>
+                </div>
+            </section>
+
+            <section id="observations" class="content-section bg-white p-6 rounded-xl shadow-md">
+                <h2 class="text-3xl font-semibold text-sky-600 mb-6">4. Key Observations and Potential Issues</h2>
+                <div class="prose max-w-none text-stone-700">
+                    <ul class="list-disc list-inside space-y-2">
+                        <li><strong>Iterative Feature Selection</strong>: The logic for <code>top_features</code> and its update within the model training loop (Cell 18) means the notebook behaves differently on the first run versus subsequent runs for datasets FD002, FD003, and FD004. On the first run, they use all engineered features; on subsequent runs, they would use only the top 10 identified in the previous run. This is an important characteristic to be aware of for reproducibility.</li>
+                        <li><strong>Feature Re-engineering in Final Cell</strong>: The re-application of feature engineering in Cell 19 *after* model evaluation is unusual if the evaluation was meant to be on those re-engineered features. It suggests the DataFrames are being modified for a purpose beyond the immediate preceding evaluation (e.g., saving a final processed version or for another, unshown analysis).</li>
+                        <li><strong>Performance Warnings</strong>: The DataFrame fragmentation warning during feature engineering is noted. While not affecting correctness, it indicates a potential area for code optimization if performance on very large datasets becomes an issue.</li>
+                        <li><strong>Model Scope</strong>: The notebook primarily focuses on Random Forest for the detailed evaluation loop, although other models like Linear Regression and XGBoost are imported.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="errors" class="content-section bg-white p-6 rounded-xl shadow-md">
+                <h2 class="text-3xl font-semibold text-sky-600 mb-6">5. Common Errors & Suggested Solutions</h2>
+                <div class="prose max-w-none text-stone-700 space-y-4">
+                    <div>
+                        <h4 class="font-semibold text-lg text-sky-700">1. FileNotFoundError</h4>
+                        <p><strong>Error Example:</strong> <code>FileNotFoundError: [Errno 2] No such file or directory: 'train_FD001.txt'</code> (triggered by Cell 8 or 10).</p>
+                        <p><strong>Cause:</strong> The required C-MAPSS data files (e.g., <code>train_FD001.txt</code>, <code>test_FD001.txt</code>, <code>RUL_FD001.txt</code>) are not in the same directory as the Jupyter Notebook, or the path is incorrect.</p>
+                        <p><strong>Solutions:</strong></p>
+                        <ul class="list-disc list-inside ml-4">
+                            <li>Ensure all data files are downloaded and placed in the same folder as your <code>appv0.ipynb</code> notebook.</li>
+                            <li>Verify the filenames exactly match those expected by the script.</li>
+                            <li>If files are in a subdirectory (e.g., a 'data/' folder), modify the file paths in Cell 10 accordingly (e.g., <code>pd.read_csv(f'data/train_{dataset}.txt', ...)</code>).</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-lg text-sky-700">2. ModuleNotFoundError / ImportError</h4>
+                        <p><strong>Error Example:</strong> <code>ModuleNotFoundError: No module named 'pandas'</code> or <code>ImportError: cannot import name 'RandomForestRegressor' from 'sklearn.ensemble'</code> (triggered by Cell 3).</p>
+                        <p><strong>Cause:</strong> Required Python libraries (e.g., pandas, scikit-learn) are not installed in your Python environment, or there's an issue with an existing installation.</p>
+                        <p><strong>Solutions:</strong></p>
+                        <ul class="list-disc list-inside ml-4">
+                            <li>Run Cell 2 (<code>!pip install ...</code>) to install all necessary packages. Ensure the installation completes without errors.</li>
+                            <li>If using virtual environments (e.g., venv, conda), make sure the notebook kernel is using the correct environment where packages are installed.</li>
+                            <li>Restart the Jupyter Notebook kernel after installation.</li>
+                            <li>Check for typos in import statements in Cell 3.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-lg text-sky-700">3. KMeans Clustering Issues (Cell 12)</h4>
+                        <p><strong>Potential Issues:</strong></p>
+                        <ul class="list-disc list-inside ml-4">
+                            <li><strong>Warning about `n_init`</strong>: Newer versions of scikit-learn might change the default for `n_init` in `KMeans`. The code uses `n_init=10`.</li>
+                            <li><strong>Poor Cluster Separation</strong>: If operating conditions are not well-separated by the 'setting' features, the clusters might not be meaningful.</li>
+                        </ul>
+                        <p><strong>Solutions:</strong></p>
+                        <ul class="list-disc list-inside ml-4">
+                            <li>The explicit `n_init=10` should prevent the warning. If it persists, check scikit-learn documentation for the current recommended practice.</li>
+                            <li>For poor separation, this is more of a data characteristic. The C-MAPSS dataset is designed such that settings for FD002/FD004 define 6 conditions. If results are poor, ensure data scaling (MinMaxScaler) was applied correctly before KMeans.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-lg text-sky-700">4. PerformanceWarning: DataFrame is highly fragmented (Cell 16)</h4>
+                        <p><strong>Warning Message:</strong> <code>PerformanceWarning: DataFrame is highly fragmented. This is usually the result of calling `frame.insert` many times...</code></p>
+                        <p><strong>Cause:</strong> Adding many new columns to a pandas DataFrame one by one (as done in the feature engineering loop) can lead to memory inefficiencies.</p>
+                        <p><strong>Solutions:</strong></p>
+                        <ul class="list-disc list-inside ml-4">
+                            <li>This is a warning, not an error; the code will still run correctly.</li>
+                            <li>For optimization (especially with larger data), one could collect all new feature columns into a list of Series or a new DataFrame and then concatenate them with the original DataFrame in a single `pd.concat(axis=1)` operation. However, for the C-MAPSS dataset sizes, the current approach is generally acceptable.</li>
+                        </ul>
+                    </div>
+                     <div>
+                        <h4 class="font-semibold text-lg text-sky-700">5. Model Performance Issues (Low R², High RMSE/Custom Score) (Cell 18)</h4>
+                        <p><strong>Observation:</strong> The model performs poorly on the validation or test set.</p>
+                        <p><strong>Potential Causes & Solutions:</strong></p>
+                        <ul class="list-disc list-inside ml-4">
+                            <li><strong>Inadequate Features:</strong> The selected or engineered features might not be capturing the degradation patterns effectively.
+                                <ul class="list-circle list-inside ml-6">
+                                    <li>Revisit feature engineering: Try different window sizes for rolling statistics, different lag values, or interaction features.</li>
+                                    <li>Analyze feature importances: Ensure key sensors are being used.</li>
+                                </ul>
+                            </li>
+                            <li><strong>Suboptimal Hyperparameters:</strong> The default Random Forest parameters (e.g., `n_estimators=50`) might not be optimal.
+                                <ul class="list-circle list-inside ml-6">
+                                    <li>Experiment with `n_estimators`, `max_depth`, `min_samples_split`, `min_samples_leaf`. Consider systematic hyperparameter tuning (e.g., GridSearchCV, RandomizedSearchCV) if time permits.</li>
+                                </ul>
+                            </li>
+                            <li><strong>Data Leakage (Less likely with by-unit CV):</strong> Ensure the cross-validation splits correctly by `unit_number` to prevent data from the same engine appearing in both train and validation folds. The current script does this.</li>
+                            <li><strong>Iterative Feature Selection Behavior:</strong> Be mindful of the `top_features` dictionary logic. For FD002-FD004, the first run uses all features, subsequent runs use only the top 10 from the first. This will change performance. Ensure you are evaluating the intended feature set.</li>
+                            <li><strong>Dataset Complexity:</strong> Datasets like FD002 and FD004 are inherently harder due to multiple operating conditions. Performance will naturally be lower than on FD001/FD003.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-lg text-sky-700">6. MemoryError or Slow Performance with Plots (Cell 14, 18)</h4>
+                        <p><strong>Issue:</strong> Notebook becomes slow or crashes, especially when generating many plots in a loop.</p>
+                        <p><strong>Cause:</strong> Matplotlib can consume significant memory if plot objects are not closed after generation, especially in loops.</p>
+                        <p><strong>Solutions:</strong></p>
+                        <ul class="list-disc list-inside ml-4">
+                            <li>The script correctly uses `plt.close()` after `plt.savefig()` in Cell 14 and Cell 18. This is crucial.</li>
+                            <li>If still an issue, consider plotting only for a subset of datasets/engines during exploration, or reducing the number of plots generated simultaneously.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Data for accordion items (cells)
+        const cellData = [
+            {
+                cellNumber: '1',
+                title: 'Project Title (Markdown)',
+                codeSnippet: '# DATA MINING PROJECT',
+                codeLanguage: 'markdown',
+                descriptionHTML: `<ul><li><strong>Purpose</strong>: Sets the title for the notebook.</li><li><strong>Type</strong>: Markdown</li></ul>`
+            },
+            {
+                cellNumber: '2',
+                title: 'Library Installation (Code)',
+                codeSnippet: '!pip install numpy pandas matplotlib seaborn scikit-learn xgboost tensorflow',
+                codeLanguage: 'bash',
+                descriptionHTML: `<ul>
+                                    <li><strong>Purpose</strong>: Installs the necessary Python libraries for the project.</li>
+                                    <li><strong>Libraries Installed</strong>:
+                                      <ul class="list-disc list-inside ml-4">
+                                        <li><code>numpy</code>: For numerical operations.</li>
+                                        <li><code>pandas</code>: For data manipulation and analysis.</li>
+                                        <li><code>matplotlib</code>: For basic plotting.</li>
+                                        <li><code>seaborn</code>: For enhanced statistical visualizations.</li>
+                                        <li><code>scikit-learn</code>: For machine learning tasks.</li>
+                                        <li><code>xgboost</code>: For the XGBoost library.</li>
+                                        <li><code>tensorflow</code>: For deep learning tasks.</li>
+                                      </ul>
+                                    </li>
+                                    <li><strong>Execution</strong>: Uses <code>!</code> to run a shell command.</li>
+                                    <li><strong>Output</strong>: Shows installation status.</li>
+                                  </ul>`
+            },
+            {
+                cellNumber: '3',
+                title: 'Importing Libraries (Code)',
+                codeSnippet: `import pandas as pd\nimport numpy as np\nimport matplotlib.pyplot as plt\nimport seaborn as sns\nfrom sklearn.preprocessing import MinMaxScaler\nfrom sklearn.model_selection import KFold\nfrom sklearn.ensemble import RandomForestRegressor\nfrom sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score\nfrom sklearn.cluster import KMeans\nfrom joblib import parallel_backend\nimport os`,
+                codeLanguage: 'python',
+                descriptionHTML: `<ul>
+                                    <li><strong>Purpose</strong>: Imports required libraries and modules.</li>
+                                    <li><strong>Key Imports</strong>: pandas, numpy, matplotlib, seaborn, scikit-learn (MinMaxScaler, KFold, RandomForestRegressor, metrics, KMeans), joblib, os.</li>
+                                    <li><strong>Note</strong>: LinearRegression and xgboost are imported but not used in the main loop of Cell 18.</li>
+                                 </ul>`
+            },
+            {
+                cellNumber: '6', // Skipping markdown cells 4, 5 for brevity in this example
+                title: 'Initializing Data Structures (Code)',
+                codeSnippet: `datasets = ['FD001', 'FD002', 'FD003', 'FD004']\ntrain_data_dict = {}\ntest_data_dict = {}\ntrue_rul_dict = {}\n\ncolumns = ['unit_number', 'time_cycles'] + \\\n          [f'setting_{i}' for i in range(1, 4)] + \\\n          [f'sensor_{i}' for i in range(1, 22)]`,
+                codeLanguage: 'python',
+                descriptionHTML: `<ul>
+                                    <li><strong>Purpose</strong>: Defines dataset names, initializes dictionaries for data storage, and defines column names.</li>
+                                    <li><strong>Rationale</strong>: Organized storage for multiple datasets and consistent column naming.</li>
+                                 </ul>`
+            },
+            {
+                cellNumber: '8', // Skipping markdown cell 7
+                title: 'File Existence Check (Code)',
+                codeSnippet: `for dataset in datasets:\n    if not os.path.exists(f'train_{dataset}.txt'):\n        raise FileNotFoundError(f"train_{dataset}.txt not found")\n    # ... (checks for test and RUL files) ...`,
+                codeLanguage: 'python',
+                descriptionHTML: `<ul>
+                                    <li><strong>Purpose</strong>: Checks if all required data files are present.</li>
+                                    <li><strong>Functionality</strong>: Uses <code>os.path.exists()</code> and raises <code>FileNotFoundError</code> if a file is missing.</li>
+                                 </ul>`
+            },
+            {
+                cellNumber: '10', // Skipping markdown cell 9
+                title: 'Data Loading Loop (Code)',
+                codeSnippet: `for dataset in datasets:\n    train_data = pd.read_csv(f'train_{dataset}.txt', sep='\\s+', header=None, names=columns)\n    # ... (loads test and RUL data, stores in dicts) ...`,
+                codeLanguage: 'python',
+                descriptionHTML: `<ul>
+                                    <li><strong>Purpose</strong>: Loads data for each dataset into pandas DataFrames.</li>
+                                    <li><strong>Functionality</strong>: Uses <code>pd.read_csv()</code> with appropriate parameters.</li>
+                                 </ul>`
+            },
+            {
+                cellNumber: '12', // Skipping markdown cell 11
+                title: 'Preprocessing Loop (Code)',
+                codeSnippet: `for dataset in datasets:\n    # ... (RUL calculation for train_data) ...\n    # ... (Missing value check) ...\n    # ... (Normalization with MinMaxScaler) ...\n    # ... (Operating condition clustering with KMeans for FD002/FD004) ...`,
+                codeLanguage: 'python',
+                descriptionHTML: `<ul>
+                                    <li><strong>Purpose</strong>: Performs RUL calculation, missing value check, normalization, and operating condition clustering.</li>
+                                    <li><strong>Key Steps</strong>:
+                                        <ul class="list-disc list-inside ml-4">
+                                            <li>RUL: <code>max_cycle - time_cycles</code>.</li>
+                                            <li>Normalization: <code>MinMaxScaler</code> fit on train, transform train & test.</li>
+                                            <li>Clustering: <code>KMeans</code> for FD002/FD004 settings.</li>
+                                        </ul>
+                                    </li>
+                                 </ul>`
+            },
+            {
+                cellNumber: '14', // Skipping markdown cell 13
+                title: 'EDA Loop (Code)',
+                codeSnippet: `for dataset in datasets:\n    # ... (Sensor trends plot for engine 1) ...\n    # ... (Correlation analysis: sensors vs RUL) ...\n    # ... (Operating condition distribution plot for FD002/FD004) ...`,
+                codeLanguage: 'python',
+                descriptionHTML: `<ul>
+                                    <li><strong>Purpose</strong>: Basic EDA: sensor trends, RUL correlations, op. condition distributions.</li>
+                                    <li><strong>Functionality</strong>: Generates and saves plots, prints correlations.</li>
+                                 </ul>`
+            },
+            {
+                cellNumber: '16', // Skipping markdown cell 15
+                title: 'Feature Engineering Loop (Code)',
+                codeSnippet: `window = 5\nsensors = [f'sensor_{i}' for i in range(1, 22)]\nfor dataset in datasets:\n    # ... (Rolling mean/std features for each sensor) ...\n    # ... (Lagged features (lag1, lag2) for each sensor) ...\n    # ... (Defines feature_cols list) ...`,
+                codeLanguage: 'python',
+                descriptionHTML: `<ul>
+                                    <li><strong>Purpose</strong>: Creates rolling statistics and lagged features.</li>
+                                    <li><strong>Key Features</strong>:
+                                        <ul class="list-disc list-inside ml-4">
+                                            <li>Rolling mean & std (window=5).</li>
+                                            <li>Lag1 & Lag2 features.</li>
+                                        </ul>
+                                    </li>
+                                    <li><strong>Note</strong>: DataFrame fragmentation warning is common here.</li>
+                                 </ul>`
+            },
+            {
+                cellNumber: '18', // Skipping markdown cell 17
+                title: 'Model Training and Evaluation Loop (Code)',
+                codeSnippet: `def custom_score(y_true, y_pred): # ... (definition) ...\nresults = {}\ntop_features = { ... } # Pre-populated for FD001\nfor dataset in datasets:\n    # ... (Select current_features based on top_features dict) ...\n    # ... (KFold CV with RandomForestRegressor) ...\n    # ... (Train final RF on full training data) ...\n    # ... (Evaluate on test set: RMSE, MAE, R2, Custom Score) ...\n    # ... (Feature importance calculation and potential update to top_features dict) ...\n    # ... (Plot predicted vs true RUL) ...`,
+                codeLanguage: 'python',
+                descriptionHTML: `<ul>
+                                    <li><strong>Purpose</strong>: Trains and evaluates Random Forest model for each dataset.</li>
+                                    <li><strong>Key Steps</strong>:
+                                        <ul class="list-disc list-inside ml-4">
+                                            <li>Defines PHM08 custom score.</li>
+                                            <li>Iterative feature selection logic using <code>top_features</code> dictionary.</li>
+                                            <li>3-fold CV (split by engine unit).</li>
+                                            <li>Test set evaluation.</li>
+                                            <li>Feature importance extraction.</li>
+                                        </ul>
+                                    </li>
+                                    <li><strong>Behavior Note</strong>: <code>top_features</code> update affects subsequent notebook runs for FD002-FD004.</li>
+                                 </ul>`
+            },
+             {
+                cellNumber: '19',
+                title: 'Project Summary and Next Steps (Code with Print Statements)',
+                codeSnippet: `print("\\nProject Summary Across Datasets")\n# ... (Loop for potential re-engineering of features based on updated top_features) ...\nprint("\\nKey Insights:")\n# ... (Prints key insights) ...\nprint("\\nNext Steps:")\n# ... (Prints future work suggestions) ...`,
+                codeLanguage: 'python',
+                descriptionHTML: `<ul>
+                                    <li><strong>Purpose</strong>: Prints summary insights and suggests future work.</li>
+                                    <li><strong>Initial Loop</strong>: Contains logic to potentially re-calculate features based on <code>top_features</code> updated in Cell 18. This modifies DataFrames *after* the main model evaluation.</li>
+                                    <li><strong>Printed Content</strong>: Summarizes findings on dataset characteristics, model performance, and lists next steps like hyperparameter tuning and exploring LSTMs.</li>
+                                 </ul>`
+            }
+        ];
+
+        const accordionContainer = document.getElementById('accordionContainer');
+        const contentSections = document.querySelectorAll('.content-section');
+        const sidebarLinks = document.querySelectorAll('.sidebar-link');
+
+        // Populate accordion
+        cellData.forEach(cell => {
+            const accordionItem = document.createElement('div');
+            accordionItem.classList.add('border', 'border-stone-200', 'rounded-lg', 'overflow-hidden', 'shadow-sm');
+
+            const button = document.createElement('button');
+            button.classList.add('w-full', 'p-4', 'text-left', 'bg-stone-50', 'hover:bg-sky-50', 'focus:outline-none', 'transition-colors', 'duration-200', 'flex', 'justify-between', 'items-center');
+            button.innerHTML = `
+                <span class="font-semibold text-sky-700">Cell ${cell.cellNumber}: ${cell.title}</span>
+                <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            `;
+
+            const content = document.createElement('div');
+            content.classList.add('accordion-content', 'p-4', 'border-t', 'border-stone-200', 'bg-white');
+            
+            let codeBlockHTML = '';
+            if (cell.codeSnippet) {
+                const escapedCode = cell.codeSnippet.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                codeBlockHTML = `<h4 class="font-semibold text-stone-700 mt-2 mb-1">Code Snippet (${cell.codeLanguage}):</h4><pre class="code-block"><code>${escapedCode}</code></pre>`;
+            }
+
+            content.innerHTML = `
+                <div class="prose prose-sm max-w-none text-stone-600">
+                    ${cell.descriptionHTML}
+                    ${codeBlockHTML}
+                </div>
+            `;
+
+            button.addEventListener('click', () => {
+                const svg = button.querySelector('svg');
+                content.classList.toggle('open');
+                svg.classList.toggle('rotate-180');
+            });
+
+            accordionItem.appendChild(button);
+            accordionItem.appendChild(content);
+            accordionContainer.appendChild(accordionItem);
+        });
+
+        // Navigation logic
+        sidebarLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = link.getAttribute('data-target');
+
+                contentSections.forEach(section => {
+                    section.classList.remove('active');
+                });
+                document.getElementById(targetId).classList.add('active');
+
+                sidebarLinks.forEach(s_link => s_link.classList.remove('active'));
+                link.classList.add('active');
+
+                if (window.innerWidth < 768) {
+                    document.querySelector('main').scrollTop = 0;
+                }
+            });
+        });
+
+        if (sidebarLinks.length > 0) {
+            sidebarLinks[0].classList.add('active');
+        }
+        
+        document.getElementById('generationDate').textContent = new Date().toLocaleDateString('en-US', {
+            year: 'numeric', month: 'long', day: 'numeric'
+        });
+
+    </script>
+</body>
+</html>
