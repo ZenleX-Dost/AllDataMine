@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Turbofan RUL Prediction - Documentation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            /* slate-50 */
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #e2e8f0;
+            /* slate-200 */
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #94a3b8;
+            /* slate-400 */
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+            /* slate-500 */
+        }
+
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-in-out;
+        }
+
+        .accordion-content.open {
+            max-height: 4000px;
+        }
+
+        .code-block {
+            background-color: #f1f5f9;
+            /* slate-100 */
+            border: 1px solid #e2e8f0;
+            /* slate-200 */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            font-family: 'Fira Code', 'Courier New', Courier, monospace;
+            font-size: 0.875rem;
+            line-height: 1.25rem;
+            color: #1e293b;
+            /* slate-800 */
+            white-space: pre;
+        }
+
+        .sidebar-link.active {
+            background-color: #e0f2fe;
+            /* sky-100 */
+            color: #0369a1;
+            /* sky-700 */
+            font-weight: 600;
+        }
+
+        .prose h4 {
+            font-size: 1.125rem;
+            /* text-lg */
+            font-weight: 600;
+            /* font-semibold */
+            color: #0369a1;
+            /* sky-700 */
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.25rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .icon {
+            width: 1.25rem;
+            height: 1.25rem;
+            margin-right: 0.75rem;
+            stroke-width: 1.5;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code&display=swap"
+        rel="stylesheet">
+</head>
+
+<body class="text-slate-800">
+    <div class="flex flex-col md:flex-row min-h-screen">
+        <aside class="w-full md:w-80 bg-white text-slate-700 p-6 shadow-xl md:min-h-screen print:hidden">
+            <div class="flex items-center space-x-3 mb-6 border-b-2 border-slate-200 pb-3">
+                <img src="https://www.nasa.gov/wp-content/uploads/2023/03/nasa-logo-web-rgb.png?resize=150,150"
+                    alt="NASA Logo" class="h-10 w-10">
+                <h1 class="text-xl font-bold text-slate-800">Turbofan RUL Engine</h1>
+            </div>
+            <nav>
+                <ul class="space-y-2">
+                    <li><a href="#"
+                            class="sidebar-link flex items-center py-2 px-3 rounded-lg hover:bg-slate-100 transition-colors duration-200"
+                            data-target="overview">1. Overview</a></li>
+                    <li><a href="#"
+                            class="sidebar-link flex items-center py-2 px-3 rounded-lg hover:bg-slate-100 transition-colors duration-200"
+                            data-target="background">2. Background</a></li>
+                    <li><a href="#"
+                            class="sidebar-link flex items-center py-2 px-3 rounded-lg hover:bg-slate-100 transition-colors duration-200"
+                            data-target="dataset">3. The Dataset</a></li>
+                    <li><a href="#"
+                            class="sidebar-link flex items-center py-2 px-3 rounded-lg hover:bg-slate-100 transition-colors duration-200"
+                            data-target="ui-structure">4. App Structure</a></li>
+                    <li><a href="#"
+                            class="sidebar-link flex items-center py-2 px-3 rounded-lg hover:bg-slate-100 transition-colors duration-200"
+                            data-target="core-functionality">5. Core Functions</a></li>
+                    <li><a href="#"
+                            class="sidebar-link flex items-center py-2 px-3 rounded-lg hover:bg-slate-100 transition-colors duration-200"
+                            data-target="how-to-run">6. How to Run</a></li>
+                    <li><a href="#"
+                            class="sidebar-link flex items-center py-2 px-3 rounded-lg hover:bg-slate-100 transition-colors duration-200"
+                            data-target="errors">7. Troubleshooting</a></li>
+                </ul>
+            </nav>
+            <div class="mt-8 pt-4 border-t border-slate-200 text-xs text-slate-500">
+                <p>A GIIADS-StackUnderflow Project.</p>
+                <p>Last updated: <span id="generationDate"></span></p>
+            </div>
+        </aside>
+
+        <main class="flex-1 p-4 sm:p-6 md:p-10 overflow-y-auto">
+            <section id="overview" class="content-section active bg-white p-6 rounded-xl shadow-lg">
+                <h2 class="text-3xl font-bold text-slate-800 mb-4">1. Turbofan Engine Prognostics</h2>
+                <div class="prose max-w-none text-slate-700">
+                    <p>This interactive tool provides a complete platform for predicting the Remaining Useful Life (RUL)
+                        of turbofan engines, based on the renowned NASA C-MAPSS dataset. It brings a full machine
+                        learning pipeline—from data exploration to model evaluation—into a single, user-friendly
+                        Streamlit application.</p>
+                    <p>The goal is to make engine prognostics tangible. You can select datasets, tune model parameters,
+                        and instantly visualize how different factors contribute to engine degradation and RUL
+                        predictions. The chart below shows a typical sensor reading from a single engine, illustrating
+                        how its values drift over time as it degrades.</p>
+                    <div id="sensorTrendChart" class="mt-6 rounded-lg overflow-hidden border border-slate-200 h-96">
+                    </div>
+                </div>
+            </section>
+
+            <section id="background" class="content-section bg-white p-6 rounded-xl shadow-lg">
+                <h2 class="text-3xl font-bold text-slate-800 mb-4">2. The Science Behind the Simulation</h2>
+                <div class="prose max-w-none text-slate-700">
+                    <p>This project is grounded in the research paper <strong class="text-sky-800">"Damage Propagation
+                            Modeling for Aircraft Engine Run-to-Failure Simulation"</strong>. The authors tackled a core
+                        problem in prognostics: the lack of real-world, run-to-failure data. Their solution was to
+                        create a high-fidelity simulation, C-MAPSS, to generate realistic engine degradation data.</p>
+                    <h4>Key Concepts:</h4>
+                    <ul class="list-disc list-inside ml-4 space-y-2">
+                        <li><strong>Damage Propagation:</strong> The simulation models wear-and-tear by gradually
+                            decreasing the flow and efficiency of key engine components, like the High-Pressure
+                            Compressor (HPC). This creates a realistic, exponential degradation path.</li>
+                        <li><strong>Health Index:</strong> An engine's health is measured by its proximity to
+                            operational safety limits (e.g., stall margin, temperature). A failure occurs when this
+                            "health index" drops to zero. Our app's goal is to predict how many cycles remain before
+                            this happens.</li>
+                        <li><strong>Asymmetric Scoring:</strong> In aviation, predicting a failure too late is far more
+                            dangerous than predicting it too early. The original research used an asymmetric scoring
+                            function to reflect this, penalizing late predictions more severely. The chart below
+                            visualizes this concept, which is implemented in our app as the `custom_score`.</li>
+                    </ul>
+                    <div id="scoringChart" class="mt-6 rounded-lg overflow-hidden border border-slate-200 h-96"></div>
+                </div>
+            </section>
+
+            <section id="dataset" class="content-section bg-white p-6 rounded-xl shadow-lg">
+                <h2 class="text-3xl font-bold text-slate-800 mb-4">3. Understanding the C-MAPSS Data</h2>
+                <div class="prose max-w-none text-slate-700">
+                    <p>The C-MAPSS dataset contains time-series data from a fleet of simulated turbofan engines. Each
+                        engine is unique, starting with different levels of initial wear. The data is split into four
+                        subsets, each with different operating conditions and fault modes.</p>
+                    <div id="datasetChart" class="mt-6 mb-8 rounded-lg overflow-hidden border border-slate-200 h-96">
+                    </div>
+                    <h4>Dataset Characteristics:</h4>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="p-4 bg-slate-50 rounded-lg border border-slate-200">
+                            <h5 class="text-sky-700 font-semibold">FD001 & FD003</h5>
+                            <ul class="list-disc list-inside ml-4 text-sm">
+                                <li><strong>Conditions:</strong> Single (Sea Level)</li>
+                                <li><strong>Complexity:</strong> Lower. Easier for models to learn degradation patterns.
+                                </li>
+                                <li><strong>Faults:</strong> FD001 (HPC Degradation), FD003 (HPC & Fan Degradation)</li>
+                            </ul>
+                        </div>
+                        <div class="p-4 bg-slate-50 rounded-lg border border-slate-200">
+                            <h5 class="text-sky-700 font-semibold">FD002 & FD004</h5>
+                            <ul class="list-disc list-inside ml-4 text-sm">
+                                <li><strong>Conditions:</strong> Six different flight conditions</li>
+                                <li><strong>Complexity:</strong> Higher. Models must distinguish degradation from
+                                    changes in operating conditions.</li>
+                                <li><strong>Faults:</strong> FD002 (HPC Degradation), FD004 (HPC & Fan Degradation)</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <h4 class="mt-6">Data Columns:</h4>
+                    <p>Each data file contains 26 columns: 1 unit number, 1 time cycle, 3 operational settings, and 21
+                        sensor measurements. The goal is to use this data to predict the RUL for engines in the test
+                        set.</p>
+                </div>
+            </section>
+
+            <section id="ui-structure" class="content-section bg-white p-6 rounded-xl shadow-lg">
+                <h2 class="text-3xl font-bold text-slate-800 mb-4">4. Navigating the Application</h2>
+                <p class="mb-6 text-slate-600">The app is split into a sidebar for controls and a main tabbed area for
+                    results. Here’s a breakdown of the interactive components.</p>
+                <div id="uiAccordionContainer" class="space-y-3"></div>
+            </section>
+
+            <section id="core-functionality" class="content-section bg-white p-6 rounded-xl shadow-lg">
+                <h2 class="text-3xl font-bold text-slate-800 mb-4">5. The Python Engine Room</h2>
+                <p class="mb-6 text-slate-600">The application's logic is powered by several key Python functions,
+                    optimized with Streamlit's caching decorators for performance. Click to expand each function.</p>
+                <div id="functionsAccordionContainer" class="space-y-3"></div>
+            </section>
+
+            <section id="how-to-run" class="content-section bg-white p-6 rounded-xl shadow-lg">
+                <h2 class="text-3xl font-bold text-slate-800 mb-4">6. Getting Started</h2>
+                <div class="prose max-w-none text-slate-700">
+                    <h4>Prerequisites:</h4>
+                    <ul class="list-disc list-inside ml-4">
+                        <li>Python 3.8+ installed.</li>
+                        <li>An environment with the required libraries. Install them with pip:
+                            <pre
+                                class="code-block"><code>pip install streamlit pandas numpy scikit-learn plotly xgboost stqdm</code></pre>
+                        </li>
+                        <li>The C-MAPSS dataset files must be in the same directory as <code>app.py</code> or in a
+                            subdirectory named `dataset`.</li>
+                    </ul>
+
+                    <h4>Running the App:</h4>
+                    <ol class="list-decimal list-inside ml-4">
+                        <li>Open your terminal or command prompt.</li>
+                        <li>Navigate to the project directory.</li>
+                        <li>Execute the run command:
+                            <pre class="code-block"><code>streamlit run app.py</code></pre>
+                        </li>
+                        <li>Streamlit will launch the application in your web browser.</li>
+                    </ol>
+
+                    <h4>User Workflow:</h4>
+                    <ol class="list-decimal list-inside ml-4">
+                        <li><strong>Select a Dataset</strong> from the sidebar to begin.</li>
+                        <li><strong>Configure Training Settings</strong> to balance speed vs. accuracy.</li>
+                        <li><strong>Click "Train Models"</strong> to start the pipeline.</li>
+                        <li><strong>Explore the Tabs</strong> to analyze results, from EDA to final model performance.
+                        </li>
+                        <li><strong>Make a Prediction</strong> in the "RUL Prediction" tab using the trained model.</li>
+                    </ol>
+                </div>
+            </section>
+
+            <section id="errors" class="content-section bg-white p-6 rounded-xl shadow-lg">
+                <h2 class="text-3xl font-bold text-slate-800 mb-4">7. Troubleshooting Guide</h2>
+                <div class="prose max-w-none text-slate-700 space-y-4">
+                    <div>
+                        <h4 class="font-semibold text-lg text-sky-700">1. FileNotFoundError</h4>
+                        <p><strong>Symptom:</strong> An error message like "File train_FD001.txt not found" on startup.
+                        </p>
+                        <p><strong>Solution:</strong> Ensure the C-MAPSS data files are located correctly, either
+                            alongside `app.py` or in a `./dataset/` subfolder.</p>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-lg text-sky-700">2. ModuleNotFoundError</h4>
+                        <p><strong>Symptom:</strong> The app fails to launch, citing a missing module (e.g., 'pandas').
+                        </p>
+                        <p><strong>Solution:</strong> Install all required libraries using the pip command provided in
+                            the "Getting Started" section.</p>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-lg text-sky-700">3. Slow Performance or Crash</h4>
+                        <p><strong>Symptom:</strong> The app is unresponsive during training on large datasets
+                            (FD002/FD004).</p>
+                        <p><strong>Solution:</strong> Use the performance-tuning options in the sidebar: enable
+                            "Subsample", "Quick Mode", or "Use Top 5 Sensors" to reduce the computational load.</p>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-lg text-sky-700">4. RUL Prediction Error</h4>
+                        <p><strong>Symptom:</strong> An error appears after clicking "Predict RUL".</p>
+                        <p><strong>Cause:</strong> A model hasn't been trained in the current session.</p>
+                        <p><strong>Solution:</strong> You must first train a model using the "Train Models" button in
+                            the sidebar before the prediction tool can be used.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const uiAccordionData = [
+            {
+                id: 'sidebar-controls',
+                title: 'Sidebar Controls',
+                descriptionHTML: `<p>The sidebar is the command center for the application, allowing you to configure every training run.</p>
+                                  <ul class="list-disc list-inside ml-4 space-y-1">
+                                    <li><strong>Dataset Selection:</strong> Dropdown to choose one of the four C-MAPSS datasets.</li>
+                                    <li><strong>Training Settings:</strong> A collapsible section with checkboxes and sliders to fine-tune the modeling process, balancing speed and accuracy.</li>
+                                    <li><strong>Train Models Button:</strong> The trigger that initiates the entire data processing and training pipeline based on your selections.</li>
+                                  </ul>`
+            },
+            {
+                id: 'main-tabs',
+                title: 'Main Content Tabs',
+                descriptionHTML: `<p>The main area presents all information in a structured, tabbed format for easy exploration.</p>
+                                  <ul class="list-disc list-inside ml-4 space-y-1">
+                                    <li><strong>Data Overview:</strong> Raw data samples and statistics.</li>
+                                    <li><strong>EDA:</strong> Plots for Exploratory Data Analysis, like sensor trends and feature correlations.</li>
+                                    <li><strong>Results:</strong> Presents key performance metrics (RMSE, R²), feature importances, and a plot comparing predictions vs. true RUL.</li>
+                                    <li><strong>Summary & Decision:</strong> Compares performance across datasets and provides a final recommendation on the best model configuration.</li>
+                                    <li><strong>RUL Prediction:</strong> An interactive form to get on-demand RUL predictions for custom sensor inputs using the trained model.</li>
+                                  </ul>`
+            }
+        ];
+
+        const functionsAccordionData = [
+            {
+                id: 'load-data',
+                title: 'load_data(dataset)',
+                decorator: '@st.cache_data',
+                descriptionHTML: `<p><strong>Purpose:</strong> Efficiently loads train, test, and RUL data files. Streamlit's caching prevents redundant disk reads, making the app much faster.</p>`,
+                codeSnippet: `@st.cache_data\ndef load_data(dataset):\n    # ... logic to find file paths ...\n    train_data = pd.read_csv(train_file, ...)\n    test_data = pd.read_csv(test_file, ...)\n    true_rul = pd.read_csv(rul_file, ...)\n    return train_data, test_data, true_rul, None`
+            },
+            {
+                id: 'preprocess-data',
+                title: 'preprocess_data(train_data, ...)',
+                decorator: '@st.cache_data',
+                descriptionHTML: `<p><strong>Purpose:</strong> Handles essential data prep. It calculates the RUL target variable, scales features to a [0, 1] range with <code>MinMaxScaler</code>, and uses <code>KMeans</code> to identify the operating conditions in complex datasets (FD002/FD004).</p>`,
+                codeSnippet: `@st.cache_data\ndef preprocess_data(train_data, test_data, dataset):\n    train_data['RUL'] = train_data.groupby(...).transform('max') - train_data['time_cycles']\n    scaler = MinMaxScaler()\n    train_data[cols] = scaler.fit_transform(train_data[cols])\n    # ... kmeans logic for FD002/FD004 ...\n    return train_data, test_data, scaler`
+            },
+            {
+                id: 'engineer-features',
+                title: 'engineer_features(...)',
+                decorator: '@st.cache_data',
+                descriptionHTML: `<p><strong>Purpose:</strong> Creates powerful new features from sensor data to boost model accuracy. It generates rolling window statistics (mean, std) and time-lagged features to capture trends over time.</p>`,
+                codeSnippet: `@st.cache_data\ndef engineer_features(train_data, test_data, ...):\n    window = 5\n    for sensor in sensors:\n        data[f'{sensor}_roll_mean'] = data.groupby(...).rolling(window).mean()\n        # ... create other rolling/lag features\n    return train_data, test_data, feature_cols`
+            },
+            {
+                id: 'train-models',
+                title: 'train_models(...)',
+                decorator: '@st.cache_resource',
+                descriptionHTML: `<p><strong>Purpose:</strong> The core modeling function. It runs a cross-validation loop to evaluate different algorithms, then trains a final Random Forest model. It caches the trained model object to prevent re-training on every interaction.</p>`,
+                codeSnippet: `@st.cache_resource\ndef train_models(...):\n    kf = KFold(n_splits=3, ...)\n    # ... cross-validation loop ...\n    final_model = RandomForestRegressor(...)\n    final_model.fit(X_train, y_train)\n    # ... predict on test data and generate results ...\n    return results_dictionary`
+            }
+        ];
+
+        function createAccordionItem(item) {
+            const accordionItem = document.createElement('div');
+            accordionItem.classList.add('border', 'border-slate-200', 'rounded-lg', 'overflow-hidden', 'shadow-sm');
+
+            const button = document.createElement('button');
+            button.classList.add('w-full', 'p-4', 'text-left', 'bg-slate-50', 'hover:bg-slate-100', 'focus:outline-none', 'transition-colors', 'duration-200', 'flex', 'justify-between', 'items-center');
+
+            let titleHTML = `<span class="font-semibold text-sky-800">${item.title}</span>`;
+            if (item.decorator) {
+                titleHTML = `<div class="flex flex-col"><span class="font-semibold text-sky-800">${item.title}</span><span class="text-xs font-mono text-sky-600">${item.decorator}</span></div>`;
+            }
+
+            button.innerHTML = `
+                ${titleHTML}
+                <svg class="w-5 h-5 transform transition-transform duration-300 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            `;
+
+            const content = document.createElement('div');
+            content.classList.add('accordion-content', 'p-4', 'border-t', 'border-slate-200', 'bg-white');
+
+            let codeBlockHTML = item.codeSnippet
+                ? `<h4 class="font-semibold text-slate-700 mt-3 mb-2">Conceptual Code:</h4><pre class="code-block"><code>${item.codeSnippet.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</code></pre>`
+                : '';
+
+            content.innerHTML = `<div class="prose prose-sm max-w-none text-slate-600">${item.descriptionHTML}${codeBlockHTML}</div>`;
+
+            button.addEventListener('click', () => {
+                const svg = button.querySelector('svg');
+                const currentlyOpen = content.classList.contains('open');
+                // Close all other items
+                document.querySelectorAll('.accordion-content.open').forEach(openContent => {
+                    if (openContent !== content) {
+                        openContent.classList.remove('open');
+                        openContent.previousElementSibling.querySelector('svg').classList.remove('rotate-180');
+                    }
+                });
+                // Toggle current item
+                content.classList.toggle('open');
+                svg.classList.toggle('rotate-180');
+            });
+
+            accordionItem.appendChild(button);
+            accordionItem.appendChild(content);
+            return accordionItem;
+        }
+
+        function populateAccordion(containerId, dataArray) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            container.innerHTML = '';
+            dataArray.forEach(item => {
+                container.appendChild(createAccordionItem(item));
+            });
+        }
+
+        // --- Plotting Functions ---
+        const plotlyLayout = {
+            paper_bgcolor: 'rgba(0,0,0,0)',
+            plot_bgcolor: 'rgba(0,0,0,0)',
+            font: { family: 'Inter, sans-serif', color: '#334155' }, // slate-700
+            xaxis: { gridcolor: '#e2e8f0' }, // slate-200
+            yaxis: { gridcolor: '#e2e8f0' }, // slate-200
+            legend: { x: 0.01, y: 0.99, bgcolor: 'rgba(255,255,255,0.7)' }
+        };
+
+        function plotScoringFunction() {
+            const d_early = Array.from({ length: 51 }, (_, i) => -50 + i);
+            const d_late = Array.from({ length: 51 }, (_, i) => i);
+            const score_early = d_early.map(d => Math.exp(-d / 10) - 1);
+            const score_late = d_late.map(d => Math.exp(d / 13) - 1);
+
+            const trace1 = { x: d_early, y: score_early, mode: 'lines', name: 'Early Prediction (Low Penalty)', line: { color: '#0ea5e9' } }; // sky-500
+            const trace2 = { x: d_late, y: score_late, mode: 'lines', name: 'Late Prediction (High Penalty)', line: { color: '#f43f5e' } }; // rose-500
+
+            Plotly.newPlot('scoringChart', [trace1, trace2], {
+                ...plotlyLayout,
+                title: 'Asymmetric Scoring Function',
+                xaxis: { ...plotlyLayout.xaxis, title: 'Prediction Error (Predicted - True RUL)' },
+                yaxis: { ...plotlyLayout.yaxis, title: 'Penalty Score' }
+            }, { responsive: true });
+        }
+
+        function plotDatasetComparison() {
+            const datasets = ['FD001', 'FD002', 'FD003', 'FD004'];
+            const train_counts = [100, 260, 100, 248];
+            const test_counts = [100, 259, 100, 249];
+
+            const trace1 = { x: datasets, y: train_counts, name: 'Train Units', type: 'bar', marker: { color: '#38bdf8' } }; // sky-400
+            const trace2 = { x: datasets, y: test_counts, name: 'Test Units', type: 'bar', marker: { color: '#fbbf24' } }; // amber-400
+
+            Plotly.newPlot('datasetChart', [trace1, trace2], {
+                ...plotlyLayout,
+                title: 'Engine Units per Dataset',
+                barmode: 'group',
+                yaxis: { ...plotlyLayout.yaxis, title: 'Number of Engines' }
+            }, { responsive: true });
+        }
+
+        function plotSensorTrend() {
+            const cycles = Array.from({ length: 200 }, (_, i) => i + 1);
+            const sensor_values = cycles.map(c => 550 - (c * 0.15) + (Math.random() - 0.5) * 5);
+
+            const trace = { x: cycles, y: sensor_values, mode: 'lines', name: 'Sensor 7', line: { color: '#818cf8' } }; // indigo-400
+
+            Plotly.newPlot('sensorTrendChart', [trace], {
+                ...plotlyLayout,
+                title: 'Example Sensor Degradation Trend (Engine 1)',
+                xaxis: { ...plotlyLayout.xaxis, title: 'Time (Cycles)' },
+                yaxis: { ...plotlyLayout.yaxis, title: 'Scaled Sensor Value' }
+            }, { responsive: true });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            populateAccordion('uiAccordionContainer', uiAccordionData);
+            populateAccordion('functionsAccordionContainer', functionsAccordionData);
+
+            // Initial plots
+            plotScoringFunction();
+            plotDatasetComparison();
+            plotSensorTrend();
+
+            const contentSections = document.querySelectorAll('.content-section');
+            const sidebarLinks = document.querySelectorAll('.sidebar-link');
+
+            function setActiveLink(targetId) {
+                contentSections.forEach(section => section.classList.remove('active'));
+                const targetSection = document.getElementById(targetId);
+                if (targetSection) targetSection.classList.add('active');
+
+                sidebarLinks.forEach(link => link.classList.remove('active'));
+                const activeLink = document.querySelector(`.sidebar-link[data-target="${targetId}"]`);
+                if (activeLink) activeLink.classList.add('active');
+            }
+
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = link.getAttribute('data-target');
+                    setActiveLink(targetId);
+                    window.location.hash = targetId;
+                });
+            });
+
+            const currentHash = window.location.hash.substring(1);
+            if (currentHash && document.getElementById(currentHash)) {
+                setActiveLink(currentHash);
+            } else if (sidebarLinks.length > 0) {
+                setActiveLink(sidebarLinks[0].getAttribute('data-target'));
+            }
+
+            document.getElementById('generationDate').textContent = new Date().toLocaleDateString('en-US', {
+                year: 'numeric', month: 'long', day: 'numeric'
+            });
+        });
+
+    </script>
+</body>
+
+</html>
